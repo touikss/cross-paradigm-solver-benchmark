@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import signal
+from contextlib import contextmanager
 from dataclasses import dataclass, field, asdict
 from typing import Any, Callable, Iterable
 
@@ -60,23 +62,59 @@ class NodeCounter:
         self.count += n
 
 
+class InstanceTimeout(Exception):
+    pass
+
+
+@contextmanager
+def _time_limit(seconds: float):
+    """Interrompt le bloc via SIGALRM si depasse `seconds`. Ne fonctionne que
+    dans le thread principal (Unix) - suffisant pour ce script de benchmark
+    execute en sequentiel. N'interrompt pas un appel C bloquant qui ne rend
+    jamais la main a l'interpreteur (non pertinent ici : les solveurs lents
+    sont en pur Python)."""
+
+    def _handler(signum, frame):
+        raise InstanceTimeout()
+
+    old_handler = signal.signal(signal.SIGALRM, _handler)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_handler)
+
+
 def run_benchmark(
     game: str,
     paradigm: str,
     solver: Solver,
     instances: Iterable[tuple[str, str | int, Any]],
     measure_fn: Callable[[Callable[[], SolverOutput]], tuple[SolverOutput, float, float]],
+    timeout_seconds: float = 120.0,
 ) -> list[Metrics]:
     """Execute un solveur sur une liste d'instances et retourne les metriques.
 
     instances: iterable de (instance_id, difficulty, instance_data)
     measure_fn: wrapper de mesure (voir instrumentation.measure) qui execute le
         callable passe et retourne (SolverOutput, temps_secondes, memoire_pic_mb)
+    timeout_seconds: si une instance depasse ce budget, elle est comptee en
+        echec (timeout) et on passe a la suivante plutot que de bloquer tout
+        le benchmark.
     """
     results: list[Metrics] = []
     for instance_id, difficulty, instance_data in instances:
         counter = NodeCounter()
-        output, elapsed, peak_mem = measure_fn(lambda: solver(instance_data, counter))
+        try:
+            with _time_limit(timeout_seconds):
+                output, elapsed, peak_mem = measure_fn(lambda: solver(instance_data, counter))
+        except InstanceTimeout:
+            output = SolverOutput(
+                success=False, nodes_explored=counter.count, extra={"timed_out": True}
+            )
+            elapsed, peak_mem = timeout_seconds, float("nan")
+            print(f"    [timeout] {game}/{paradigm}/{instance_id} > {timeout_seconds}s, skip")
         results.append(
             Metrics(
                 game=game,
