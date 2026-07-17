@@ -1,0 +1,24 @@
+[project]
+name = "benchmark-solveurs-jeux"
+version = "0.1.0"
+description = "Benchmark cross-paradigme de solveurs de jeux (Sudoku, Connect Four, Wordle)"
+requires-python = ">=3.13"
+dependencies = [
+    "ipykernel",
+    "matplotlib",
+    "numpy",
+    "ortools",
+    "pandas",
+    "pygad",
+    "pytest",
+    "scipy",
+    "seaborn",
+    "z3-solver",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["benchmark"]
