@@ -3,10 +3,10 @@ recursif de _minimax (un noeud de l'arbre de jeu visite)."""
 
 from __future__ import annotations
 
-from ..core import NodeCounter
+from ..core import NodeCounter, SolverOutput
 from .board import Board
 from .heuristic import evaluate
-from .match import make_solver
+from .match import run_match_solver
 
 WIN_SCORE = 10_000
 
@@ -43,4 +43,10 @@ def choose_move(board: Board, depth: int, counter: NodeCounter) -> int:
     return best_col
 
 
-solve_minimax = make_solver(lambda depth: (lambda board, counter: choose_move(board, depth, counter)))
+def solve_minimax(instance: tuple[Board, int], counter: NodeCounter) -> SolverOutput:
+    board, depth = instance
+
+    def agent_choose_move(b: Board, c: NodeCounter) -> int:
+        return choose_move(b, depth, c)
+
+    return run_match_solver(agent_choose_move, board, counter)

@@ -40,26 +40,20 @@ def play_match(
     return board.winner(), plies
 
 
-def make_solver(
-    choose_move_factory: Callable[[int], ChooseMoveFn],
-) -> Callable[[tuple[Board, int], NodeCounter], SolverOutput]:
-    """Construit un solver (pour run_benchmark) qui joue une partie complete.
+def run_match_solver(
+    agent_choose_move: ChooseMoveFn, start_board: Board, counter: NodeCounter
+) -> SolverOutput:
+    """Joue une partie complete et empaquette le resultat en SolverOutput.
 
-    choose_move_factory(param) renvoie la fonction de choix de coup de l'agent
-    teste, parametree par le 'parametre de difficulte' de l'instance (profondeur
-    de recherche pour minimax/alpha-beta, nombre de simulations pour MCTS).
+    Utilise par les solve_* de chaque module (minimax.py, alpha_beta.py, ...),
+    qui doivent rester des fonctions top-level (picklables pour le
+    multiprocessing) plutot que des closures produites par une factory.
     """
-
-    def solver(instance: tuple[Board, int], counter: NodeCounter) -> SolverOutput:
-        start_board, param = instance
-        agent_choose_move = choose_move_factory(param)
-        winner, plies = play_match(agent_choose_move, start_board, counter)
-        success = winner == PLAYER_1
-        return SolverOutput(
-            success=success,
-            nodes_explored=counter.count,
-            solution_quality=float(plies),
-            extra={"winner": winner},
-        )
-
-    return solver
+    winner, plies = play_match(agent_choose_move, start_board, counter)
+    success = winner == PLAYER_1
+    return SolverOutput(
+        success=success,
+        nodes_explored=counter.count,
+        solution_quality=float(plies),
+        extra={"winner": winner},
+    )

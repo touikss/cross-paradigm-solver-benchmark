@@ -11,9 +11,9 @@ from __future__ import annotations
 import math
 import random
 
-from ..core import NodeCounter
+from ..core import NodeCounter, SolverOutput
 from .board import Board
-from .match import make_solver
+from .match import run_match_solver
 
 EXPLORATION_CONSTANT = 1.4
 
@@ -81,6 +81,10 @@ def search(root_board: Board, n_simulations: int, counter: NodeCounter, seed: in
     return max(root.children, key=lambda n: n.visits).move
 
 
-solve_mcts = make_solver(
-    lambda n_simulations: (lambda board, counter: search(board, n_simulations, counter))
-)
+def solve_mcts(instance: tuple[Board, int], counter: NodeCounter) -> SolverOutput:
+    board, n_simulations = instance
+
+    def agent_choose_move(b: Board, c: NodeCounter) -> int:
+        return search(b, n_simulations, c)
+
+    return run_match_solver(agent_choose_move, board, counter)

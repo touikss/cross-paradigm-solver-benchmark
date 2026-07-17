@@ -5,10 +5,10 @@ un coup candidat evalue."""
 
 from __future__ import annotations
 
-from ..core import NodeCounter
+from ..core import NodeCounter, SolverOutput
 from .board import Board
 from .heuristic import evaluate
-from .match import make_solver
+from .match import run_match_solver
 
 
 def choose_move(board: Board, counter: NodeCounter) -> int:
@@ -24,4 +24,6 @@ def choose_move(board: Board, counter: NodeCounter) -> int:
     return best_col
 
 
-solve_baseline = make_solver(lambda _param: choose_move)
+def solve_baseline(instance: tuple[Board, int], counter: NodeCounter) -> SolverOutput:
+    board, _param = instance
+    return run_match_solver(choose_move, board, counter)
