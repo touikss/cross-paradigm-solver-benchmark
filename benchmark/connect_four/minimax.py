@@ -19,7 +19,7 @@ def _minimax(board: Board, depth: int, player: int, counter: NodeCounter) -> flo
     if depth == 0 or board.is_full():
         return evaluate(board, player)
 
-    moves = board.legal_moves()
+    moves = board.ordered_moves()
     maximizing = board.to_move == player
     best = -float("inf") if maximizing else float("inf")
     for col in moves:
@@ -33,9 +33,10 @@ def _minimax(board: Board, depth: int, player: int, counter: NodeCounter) -> flo
 
 def choose_move(board: Board, depth: int, counter: NodeCounter) -> int:
     player = board.to_move
-    best_col = board.legal_moves()[0]
+    moves = board.ordered_moves()
+    best_col = moves[0]
     best_value = -float("inf")
-    for col in board.legal_moves():
+    for col in moves:
         value = _minimax(board.play(col), depth - 1, player, counter)
         if value > best_value:
             best_value = value

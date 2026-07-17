@@ -9,6 +9,8 @@ PLAYER_1 = 1
 PLAYER_2 = -1
 EMPTY = 0
 
+_CENTER_ORDER = sorted(range(N_COLS), key=lambda c: abs(c - N_COLS // 2))
+
 
 class Board:
     def __init__(self, cells: list[list[int]] | None = None, to_move: int = PLAYER_1):
@@ -21,6 +23,16 @@ class Board:
 
     def legal_moves(self) -> list[int]:
         return [c for c in range(N_COLS) if self.cells[c][N_ROWS - 1] == EMPTY]
+
+    def ordered_moves(self) -> list[int]:
+        """Coups legaux tries par proximite au centre (meilleurs coups en
+        premier au Puissance 4). Utilise par minimax ET alpha-beta : meme
+        ordre de parcours pour les deux, pour que l'elagage alpha-beta ne
+        fasse QUE couper des noeuds sans jamais changer le coup choisi en cas
+        d'egalite de valeur (sinon les deux peuvent diverger sur des coups
+        equivalents et jouer des parties differentes)."""
+        legal = set(self.legal_moves())
+        return [c for c in _CENTER_ORDER if c in legal]
 
     def height(self, col: int) -> int:
         for r in range(N_ROWS):
