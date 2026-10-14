@@ -69,8 +69,8 @@ def run_connect_four(csv_path: Path) -> list[Metrics]:
         depth_instances,
         mcts_instances,
     )
-    from .connect_four.minimax import solve_minimax
     from .connect_four.mcts import solve_mcts
+    from .connect_four.minimax import solve_minimax
 
     solvers = {
         "minimax": (solve_minimax, depth_instances(n_per_depth=1, depths=MINIMAX_DEPTHS)),

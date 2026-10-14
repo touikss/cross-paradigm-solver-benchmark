@@ -7,7 +7,7 @@ du centre (plus de fenetres possibles au centre).
 
 from __future__ import annotations
 
-from .board import Board, EMPTY, N_COLS, N_ROWS
+from .board import N_COLS, N_ROWS, Board
 
 CENTER_COL = N_COLS // 2
 WINDOW_SCORES = {2: 2, 3: 5, 4: 1000}

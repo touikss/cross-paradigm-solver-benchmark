@@ -1,10 +1,10 @@
 import pytest
 
-from benchmark.connect_four.board import Board, PLAYER_1, PLAYER_2
 from benchmark.connect_four.alpha_beta import solve_alpha_beta
 from benchmark.connect_four.baseline import solve_baseline
-from benchmark.connect_four.minimax import solve_minimax
+from benchmark.connect_four.board import PLAYER_1, Board
 from benchmark.connect_four.mcts import solve_mcts
+from benchmark.connect_four.minimax import solve_minimax
 from benchmark.core import NodeCounter
 
 

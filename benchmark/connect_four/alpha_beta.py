@@ -26,7 +26,8 @@ def _alpha_beta(
     if maximizing:
         value = -float("inf")
         for col in board.ordered_moves():
-            value = max(value, _alpha_beta(board.play(col), depth - 1, alpha, beta, player, counter))
+            child = _alpha_beta(board.play(col), depth - 1, alpha, beta, player, counter)
+            value = max(value, child)
             alpha = max(alpha, value)
             if alpha >= beta:
                 break
@@ -34,7 +35,8 @@ def _alpha_beta(
     else:
         value = float("inf")
         for col in board.ordered_moves():
-            value = min(value, _alpha_beta(board.play(col), depth - 1, alpha, beta, player, counter))
+            child = _alpha_beta(board.play(col), depth - 1, alpha, beta, player, counter)
+            value = min(value, child)
             beta = min(beta, value)
             if alpha >= beta:
                 break

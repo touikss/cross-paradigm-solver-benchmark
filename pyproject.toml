@@ -27,4 +27,13 @@ packages = ["benchmark"]
 dev = [
     "jupyter-client>=8.9.1",
     "nbconvert>=7.17.1",
+    "ruff>=0.17.0",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["notebook.ipynb"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

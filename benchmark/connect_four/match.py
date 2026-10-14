@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Callable
 
 from ..core import NodeCounter, SolverOutput
-from .board import Board, PLAYER_1
+from .board import PLAYER_1, Board
 
 ChooseMoveFn = Callable[[Board, NodeCounter], int]
 

@@ -21,7 +21,9 @@ def _fixed_mask(grid: SudokuGrid) -> list[list[bool]]:
     return [[grid.cells[r][c] != 0 for c in range(9)] for r in range(9)]
 
 
-def _random_individual(grid: SudokuGrid, fixed: list[list[bool]], rng: random.Random) -> list[list[int]]:
+def _random_individual(
+    grid: SudokuGrid, fixed: list[list[bool]], rng: random.Random
+) -> list[list[int]]:
     cells = [row[:] for row in grid.cells]
     for box_row in range(0, 9, 3):
         for box_col in range(0, 9, 3):

@@ -10,8 +10,8 @@ import math
 import random
 
 from ..core import NodeCounter, SolverOutput
+from .genetic import _fitness, _fixed_mask, _random_individual
 from .grid import SudokuGrid
-from .genetic import _fixed_mask, _fitness, _random_individual
 
 INITIAL_TEMPERATURE = 2.0
 COOLING_RATE = 0.99997
