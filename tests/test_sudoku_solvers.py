@@ -8,9 +8,7 @@ from benchmark.sudoku.grid import SudokuGrid
 from benchmark.sudoku.instances import sample_instances
 from benchmark.sudoku.smt import solve_smt
 
-EASY_PUZZLE = (
-    "003020600900305001001806400008102900700000008006708200002609500800203009005010300"
-)
+EASY_PUZZLE = "003020600900305001001806400008102900700000008006708200002609500800203009005010300"
 
 EXACT_SOLVERS = [
     solve_backtracking,

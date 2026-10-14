@@ -1,9 +1,9 @@
-"""Backtracking naif et variante MRV (Minimum Remaining Values).
+"""Naive backtracking and the MRV (Minimum Remaining Values) variant.
 
-Un 'noeud explore' correspond a une affectation (case, valeur) testee. Un
-budget de noeuds maximum evite l'explosion combinatoire du backtracking naif
-sur certaines grilles adversariales (echec par depassement de budget = un
-resultat empirique en soi, illustrant la limite du paradigme).
+An 'explored node' corresponds to one (cell, value) assignment tested. A
+maximum node budget avoids the combinatorial explosion of naive backtracking
+on some adversarial grids (failing by exceeding the budget is an empirical
+result in itself, illustrating the limits of the paradigm).
 """
 
 from __future__ import annotations

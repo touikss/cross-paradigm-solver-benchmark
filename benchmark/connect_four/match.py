@@ -1,7 +1,6 @@
-"""Fait jouer un agent teste contre un adversaire de reference fixe
-(alpha-beta profondeur 4) sur une partie complete, plutot qu'un tournoi
-tous-contre-tous - plus interpretable pour comparer des paradigmes
-heterogenes (voir notebook)."""
+"""Plays a tested agent against a fixed reference opponent (alpha-beta depth 4)
+over one full game, rather than an all-vs-all tournament; more interpretable
+for comparing heterogeneous paradigms (see notebook)."""
 
 from __future__ import annotations
 
@@ -16,7 +15,7 @@ REFERENCE_DEPTH = 4
 
 
 def _reference_choose_move(board: Board, _counter: NodeCounter) -> int:
-    from . import alpha_beta  # import tardif : evite un cycle avec alpha_beta.py
+    from . import alpha_beta  # late import: avoids a cycle with alpha_beta.py
 
     return alpha_beta.choose_move(board, REFERENCE_DEPTH, NodeCounter())
 
@@ -27,7 +26,7 @@ def play_match(
     counter: NodeCounter,
     agent_plays: int = PLAYER_1,
 ) -> tuple[int | None, int]:
-    """Joue une partie complete. Retourne (gagnant ou None si nulle, nb de coups)."""
+    """Play one full game. Return (winner or None if draw, number of moves)."""
     board = start_board.clone()
     plies = 0
     while not board.is_terminal():
@@ -43,11 +42,11 @@ def play_match(
 def run_match_solver(
     agent_choose_move: ChooseMoveFn, start_board: Board, counter: NodeCounter
 ) -> SolverOutput:
-    """Joue une partie complete et empaquette le resultat en SolverOutput.
+    """Play one full game and package the result as a SolverOutput.
 
-    Utilise par les solve_* de chaque module (minimax.py, alpha_beta.py, ...),
-    qui doivent rester des fonctions top-level (picklables pour le
-    multiprocessing) plutot que des closures produites par une factory.
+    Used by each module's solve_* functions (minimax.py, alpha_beta.py, ...),
+    which must remain top-level functions (picklable for multiprocessing)
+    rather than closures produced by a factory.
     """
     winner, plies = play_match(agent_choose_move, start_board, counter)
     success = winner == PLAYER_1

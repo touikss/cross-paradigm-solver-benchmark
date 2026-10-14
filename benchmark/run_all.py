@@ -1,12 +1,12 @@
-"""Lance tous les benchmarks (Sudoku, Connect Four, Wordle) et sauvegarde les
-resultats en CSV dans results/. A executer une fois via
-`uv run python -m benchmark.run_all` ; le notebook se contente ensuite de
-recharger les CSV (evite de relancer GA/MCTS a chaque execution du notebook).
+"""Run all benchmarks (Sudoku, Connect Four, Wordle) and save the results as
+CSV files in results/. Run once via `uv run python -m benchmark.run_all`; the
+notebook then simply reloads the CSVs (avoids rerunning GA/MCTS on every
+notebook execution).
 
-Chaque instance est executee dans un processus separe (ProcessPoolExecutor) :
-les instances d'un meme solveur sont independantes, donc parallelisables sans
-effort particulier. Le CSV d'un jeu est reecrit apres CHAQUE solveur (pas
-seulement en fin de jeu), pour ne rien perdre si le script est interrompu.
+Each instance runs in a separate process (ProcessPoolExecutor): instances of a
+given solver are independent, hence trivially parallelizable. A game's CSV is
+rewritten after EVERY solver (not only at the end of the game), so nothing is
+lost if the script is interrupted.
 """
 
 from __future__ import annotations
@@ -25,8 +25,8 @@ def _run_and_checkpoint(
     csv_path: Path,
     default_instances=None,
 ) -> list[Metrics]:
-    """Lance chaque solveur de `solvers` (nom -> (solver, instances_ou_None))
-    et reecrit le CSV apres chaque solveur termine."""
+    """Run each solver in `solvers` (name -> (solver, instances_or_None))
+    and rewrite the CSV after each finished solver."""
     results: list[Metrics] = []
     for name, (solver, instances) in solvers.items():
         instances = instances if instances is not None else default_instances
@@ -108,7 +108,7 @@ def main() -> None:
     print("Wordle...")
     run_wordle(RESULTS_DIR / "wordle_results.csv")
 
-    print("Termine. Resultats dans results/*.csv")
+    print("Done. Results written to results/*.csv")
 
 
 if __name__ == "__main__":

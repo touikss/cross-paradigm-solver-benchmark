@@ -1,7 +1,6 @@
-"""Agent glouton (baseline naive) : joue le coup qui maximise l'heuristique a
-un seul coup de profondeur (pas d'anticipation adverse). Sert de point de
-comparaison bas de gamme face a minimax/alpha-beta/MCTS. Un 'noeud explore' =
-un coup candidat evalue."""
+"""Greedy agent (naive baseline): plays the move that maximizes the heuristic at
+a single ply (no opponent lookahead). Serves as a low-end reference against
+minimax/alpha-beta/MCTS. An 'explored node' = one candidate move evaluated."""
 
 from __future__ import annotations
 

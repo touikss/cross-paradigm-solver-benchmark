@@ -1,9 +1,9 @@
-"""Monte Carlo Tree Search (selection UCB1, rollout aleatoire).
+"""Monte Carlo Tree Search (UCB1 selection, random rollout).
 
-Un 'noeud explore' = une simulation MCTS (selection+expansion+rollout+backprop).
-Contrairement a minimax/alpha-beta, MCTS n'a pas de profondeur fixe : le budget
-est donne en nombre de simulations (anytime), a comparer en cout temps avec
-les paradigmes a profondeur fixe (voir discussion dans le notebook).
+An 'explored node' = one MCTS simulation (selection+expansion+rollout+backprop).
+Unlike minimax/alpha-beta, MCTS has no fixed depth: the budget is given as a
+number of simulations (anytime), to be compared in time cost with the
+fixed-depth paradigms (see the discussion in the notebook).
 """
 
 from __future__ import annotations

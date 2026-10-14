@@ -1,7 +1,7 @@
-"""Programmation par contraintes moderne via OR-Tools CP-SAT.
+"""Modern constraint programming via OR-Tools CP-SAT.
 
-Un 'noeud explore' correspond au nombre de branches (decisions) explorees par
-le solveur CP-SAT, recupere via les statistiques du solveur.
+An 'explored node' corresponds to the number of branches (decisions) explored
+by the CP-SAT solver, retrieved from the solver statistics.
 """
 
 from __future__ import annotations

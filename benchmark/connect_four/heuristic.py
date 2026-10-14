@@ -1,8 +1,8 @@
-"""Fonction d'evaluation heuristique partagee par minimax/alpha-beta/expectimax.
+"""Heuristic evaluation function shared by minimax/alpha-beta/expectimax.
 
-Compte les alignements ouverts de 2 et 3 pions (fenetres de 4 cases contenant
-uniquement les pions d'un joueur + des cases vides), pondere par la proximite
-du centre (plus de fenetres possibles au centre).
+Counts open lines of 2 and 3 pieces (windows of 4 cells containing only one
+player's pieces plus empty cells), weighted by proximity to the center (more
+possible windows near the center).
 """
 
 from __future__ import annotations

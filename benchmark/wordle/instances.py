@@ -17,7 +17,7 @@ def load_words(length: int) -> list[str]:
 def sample_instances(
     n_per_length: int = 10, seed: int = 42
 ) -> list[tuple[str, int, tuple[str, list[str]]]]:
-    """Retourne (instance_id, longueur, (mot_cible, liste_de_candidats))."""
+    """Return (instance_id, length, (target_word, candidate_list))."""
     rng = random.Random(seed)
     instances = []
     for length in LENGTHS:

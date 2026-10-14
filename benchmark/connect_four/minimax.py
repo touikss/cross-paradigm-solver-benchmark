@@ -1,5 +1,5 @@
-"""Minimax a profondeur bornee (sans elagage). Un 'noeud explore' = un appel
-recursif de _minimax (un noeud de l'arbre de jeu visite)."""
+"""Depth-limited minimax (no pruning). An 'explored node' = one recursive call
+of _minimax (one game-tree node visited)."""
 
 from __future__ import annotations
 

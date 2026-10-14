@@ -1,8 +1,8 @@
-"""Solveur par maximisation du gain d'information (entropie de Shannon), popularise
-par la video 3Blue1Brown sur Wordle. Pour chaque mot candidat, on estime
-l'entropie de la distribution des patterns de feedback qu'il produirait sur
-l'ensemble des cibles possibles, et on joue le mot qui maximise cette entropie.
-Un 'noeud explore' = un mot candidat evalue (calcul d'entropie)."""
+"""Solver maximizing information gain (Shannon entropy), popularized by the
+3Blue1Brown video on Wordle. For each candidate word, we estimate the entropy
+of the distribution of feedback patterns it would produce over the set of
+possible targets, and play the word that maximizes this entropy.
+An 'explored node' = one candidate word evaluated (entropy computation)."""
 
 from __future__ import annotations
 
@@ -13,17 +13,15 @@ from ..core import NodeCounter, SolverOutput
 from .game import get_feedback, is_win
 from .instances import MAX_ATTEMPTS
 
-# Le premier coup optimal ne depend que de la liste de mots (pas de la cible) :
-# on le met en cache pour ne pas repeter le calcul le plus couteux a chaque instance.
+# The optimal first guess depends only on the word list (not on the target):
+# cache it to avoid repeating the most expensive computation for every instance.
 _first_guess_cache: dict[tuple[str, ...], str] = {}
 
 
 def _entropy(guess: str, candidates: list[str]) -> float:
     pattern_counts = Counter(get_feedback(guess, word) for word in candidates)
     total = len(candidates)
-    return -sum(
-        (count / total) * math.log2(count / total) for count in pattern_counts.values()
-    )
+    return -sum((count / total) * math.log2(count / total) for count in pattern_counts.values())
 
 
 def _best_guess(candidates: list[str], counter: NodeCounter) -> str:

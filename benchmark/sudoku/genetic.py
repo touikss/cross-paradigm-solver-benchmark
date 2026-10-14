@@ -1,7 +1,7 @@
-"""Algorithme genetique : chaque individu est une grille completee (blocs 3x3
-remplis avec les chiffres 1-9 sans repetition), le fitness compte les
-conflits restants sur les lignes/colonnes. Un 'noeud explore' = une evaluation
-de fitness (un individu evalue).
+"""Genetic algorithm: each individual is a completed grid (3x3 blocks filled
+with digits 1-9 without repetition); fitness counts the remaining conflicts
+on rows/columns. An 'explored node' = one fitness evaluation (one individual
+evaluated).
 """
 
 from __future__ import annotations
@@ -61,12 +61,10 @@ def _crossover(a: list[list[int]], b: list[list[int]], rng: random.Random) -> li
     return child
 
 
-def _mutate(
-    cells: list[list[int]], fixed: list[list[bool]], rng: random.Random
-) -> None:
-    """Mutation guidee : essaie plusieurs swaps dans un bloc et garde celui qui
-    reduit le plus les conflits (hill-climbing local, courant dans les GA pour
-    Sudoku car un swap aleatoire pur converge tres mal)."""
+def _mutate(cells: list[list[int]], fixed: list[list[bool]], rng: random.Random) -> None:
+    """Guided mutation: try several swaps within a block and keep the one that
+    reduces conflicts the most (local hill-climbing, common in Sudoku GAs
+    because a purely random swap converges very poorly)."""
     box_row = rng.choice(range(0, 9, 3))
     box_col = rng.choice(range(0, 9, 3))
     free_cells = [
@@ -120,7 +118,7 @@ def solve_genetic(grid: SudokuGrid, counter: NodeCounter, seed: int = 0) -> Solv
             break
 
         if stagnant >= STAGNATION_LIMIT:
-            # redemarrage partiel : garde l'elite, regenere le reste au hasard
+            # partial restart: keep the elite, regenerate the rest at random
             elite = scored[: POP_SIZE // 20]
             population = [row[:] for row in elite] + [
                 _random_individual(grid, fixed, rng) for _ in range(POP_SIZE - len(elite))

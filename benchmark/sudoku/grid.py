@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 
 
 class SudokuGrid:
-    """Representation d'une grille de Sudoku 9x9."""
+    """Representation of a 9x9 Sudoku grid."""
 
     def __init__(self, grid: Optional[List[List[int]]] = None):
         if grid is None:
@@ -46,7 +46,7 @@ class SudokuGrid:
         return None
 
     def find_empty_mrv(self) -> Optional[Tuple[int, int]]:
-        """Cellule vide avec le moins de candidats possibles (Minimum Remaining Values)."""
+        """Empty cell with the fewest possible candidates (Minimum Remaining Values)."""
         best: Optional[Tuple[int, int]] = None
         best_count = 10
         for r in range(9):
@@ -64,7 +64,7 @@ class SudokuGrid:
         return all(self.cells[r][c] != 0 for r in range(9) for c in range(9))
 
     def is_solved(self) -> bool:
-        """Grille complete ET valide (lignes/colonnes/blocs sans doublon)."""
+        """Complete AND valid grid (rows/columns/blocks without duplicates)."""
         if not self.is_complete():
             return False
         digits = set(range(1, 10))

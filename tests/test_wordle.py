@@ -14,7 +14,7 @@ def test_feedback_all_green_on_exact_match():
 
 
 def test_feedback_handles_duplicate_letters():
-    # target 'allow' a deux 'l' ; guess 'lulls' a deux 'l' aussi
+    # target 'allow' has two 'l'; guess 'lulls' also has two 'l'
     feedback = get_feedback("lulls", "allow")
     assert feedback[0] in ("Y", "G")
     assert not is_win(feedback)
@@ -24,9 +24,7 @@ def test_feedback_marks_absent_letter_as_gray():
     assert get_feedback("zzzzz", "crane") == "XXXXX"
 
 
-@pytest.mark.parametrize(
-    "solver", [solve_bayesian_elimination, solve_csp, solve_entropy]
-)
+@pytest.mark.parametrize("solver", [solve_bayesian_elimination, solve_csp, solve_entropy])
 def test_solvers_converge_on_a_sample_of_5_letter_words(solver):
     instances = [i for i in sample_instances(n_per_length=3) if i[1] == 5]
     for _instance_id, _length, data in instances:

@@ -1,10 +1,10 @@
-"""Instances de benchmark Connect Four : position de depart (plateau vide) +
-parametre de 'difficulte' de recherche.
+"""Connect Four benchmark instances: starting position (empty board) + search
+'difficulty' parameter.
 
-Pour minimax/alpha-beta/baseline, la difficulte = profondeur de recherche
-(1 a 10). Pour MCTS, qui n'a pas de profondeur fixe, la difficulte est
-convertie en un nombre de simulations equivalent (voir notebook pour la
-discussion budget-temps vs profondeur-fixe).
+For minimax/alpha-beta/baseline, difficulty = search depth (1 to 10). For
+MCTS, which has no fixed depth, difficulty is converted into an equivalent
+number of simulations (see the notebook for the time-budget vs fixed-depth
+discussion).
 """
 
 from __future__ import annotations
@@ -12,15 +12,15 @@ from __future__ import annotations
 from .board import Board
 
 DEPTHS = list(range(1, 11))
-# Minimax n'a pas d'elagage : a profondeur >= 7 une partie complete devient
-# impraticable en temps raisonnable (explosion combinatoire, precisement ce
-# que le benchmark doit illustrer face a alpha-beta).
+# Minimax has no pruning: at depth >= 7 a full game becomes impractical in
+# reasonable time (combinatorial explosion, precisely what the benchmark is
+# meant to illustrate against alpha-beta).
 MINIMAX_DEPTHS = list(range(1, 7))
-# Meme avec elagage + tri des coups par le centre, la profondeur 10 fait
-# passer une partie complete a plusieurs minutes (~x7 par profondeur
-# supplementaire) ; la tendance exponentielle est deja tres claire a 9.
+# Even with pruning + center-first move ordering, depth 10 pushes a full game
+# to several minutes (~x7 per extra depth level); the exponential trend is
+# already very clear at 9.
 ALPHA_BETA_DEPTHS = list(range(1, 10))
-MCTS_SIMULATIONS_PER_DEPTH = 50  # facteur d'echelle simulations ~ profondeur
+MCTS_SIMULATIONS_PER_DEPTH = 50  # scale factor: simulations ~ depth
 
 
 def depth_instances(

@@ -1,6 +1,6 @@
-"""Minimax avec elagage alpha-beta. Meme heuristique et meme structure que
-minimax.py, seul l'elagage change - permet de comparer directement le nombre
-de noeuds explores a resultat identique."""
+"""Minimax with alpha-beta pruning. Same heuristic and structure as minimax.py;
+only the pruning differs, so the number of explored nodes can be compared
+directly at identical results."""
 
 from __future__ import annotations
 

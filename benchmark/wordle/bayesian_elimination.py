@@ -1,7 +1,7 @@
-"""Elimination bayesienne simple : a chaque tour, on filtre les mots candidats
-compatibles avec le feedback recu, et on choisit le prochain essai au hasard
-(uniformement) parmi les candidats restants. Un 'noeud explore' = un mot
-candidat evalue lors du filtrage."""
+"""Simple Bayesian elimination: at each turn, filter the candidate words
+compatible with the received feedback, and pick the next guess at random
+(uniformly) among the remaining candidates. An 'explored node' = one
+candidate word evaluated during filtering."""
 
 from __future__ import annotations
 

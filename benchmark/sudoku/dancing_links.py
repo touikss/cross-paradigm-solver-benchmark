@@ -1,7 +1,7 @@
-"""Algorithm X de Knuth via Dancing Links (exact cover) applique au Sudoku.
+"""Knuth's Algorithm X via Dancing Links (exact cover) applied to Sudoku.
 
-Un 'noeud explore' correspond a un choix de ligne (case, valeur) dans la
-recherche d'exact cover.
+An 'explored node' corresponds to a row choice (cell, value) in the exact
+cover search.
 """
 
 from __future__ import annotations

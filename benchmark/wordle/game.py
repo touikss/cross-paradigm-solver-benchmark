@@ -1,6 +1,6 @@
-"""Regles du jeu Wordle : calcul du feedback (vert/jaune/gris) pour un essai,
-avec gestion correcte des lettres dupliquees (algorithme officiel Wordle:
-deux passes, verts d'abord, puis jaunes sur les lettres restantes)."""
+"""Wordle game rules: feedback computation (green/yellow/gray) for a guess,
+with correct handling of duplicate letters (official Wordle algorithm:
+two passes, greens first, then yellows on the remaining letters)."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ GRAY = "X"
 
 def get_feedback(guess: str, target: str) -> str:
     if len(guess) != len(target):
-        raise ValueError("guess et target doivent avoir la meme longueur")
+        raise ValueError("guess and target must have the same length")
 
     n = len(target)
     feedback = [GRAY] * n
@@ -39,5 +39,5 @@ def is_win(feedback: str) -> bool:
 
 
 def filter_candidates(candidates: list[str], guess: str, feedback: str) -> list[str]:
-    """Ne garde que les mots compatibles avec le feedback observe pour `guess`."""
+    """Keep only the words compatible with the feedback observed for `guess`."""
     return [word for word in candidates if get_feedback(guess, word) == feedback]

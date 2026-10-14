@@ -1,7 +1,7 @@
-"""Satisfiabilite modulo theories (SMT) via Z3.
+"""Satisfiability modulo theories (SMT) via Z3.
 
-Un 'noeud explore' correspond au nombre de decisions prises par le solveur
-Z3, recupere via ses statistiques internes ('decisions').
+An 'explored node' corresponds to the number of decisions made by the Z3
+solver, retrieved from its internal statistics ('decisions').
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Modele de donnees commun et orchestration du benchmark cross-paradigme."""
+"""Common data model and orchestration of the cross-paradigm benchmark."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ import pandas as pd
 
 @dataclass
 class SolverOutput:
-    """Resultat brut retourne par un solveur, avant mesure temps/memoire."""
+    """Raw result returned by a solver, before time/memory measurement."""
 
     success: bool
     nodes_explored: int
@@ -26,7 +26,7 @@ class SolverOutput:
 
 @dataclass
 class Metrics:
-    """Une ligne de resultat de benchmark, uniforme quel que soit le jeu/paradigme."""
+    """One benchmark result row, uniform across games/paradigms."""
 
     game: str
     paradigm: str
@@ -50,13 +50,13 @@ Solver = Callable[[Any, "NodeCounter"], SolverOutput]
 
 
 class NodeCounter:
-    """Compteur de 'noeuds explores' incremente par un solveur pendant sa recherche.
+    """Counter of 'explored nodes' incremented by a solver during its search.
 
-    La notion de noeud varie par famille de paradigme (voir README/notebook) :
-    decision/affectation testee (backtracking, DLX, CP-SAT, SMT), noeud de l'arbre
-    de jeu visite (minimax, alpha-beta, MCTS), evaluation de fitness (GA, recuit
-    simule), ou mot candidat evalue (Wordle). Ce compteur ne fait qu'incrementer ;
-    la semantique est documentee au niveau de chaque solveur.
+    What a node means varies by paradigm family (see README/notebook): decision
+    or assignment tested (backtracking, DLX, CP-SAT, SMT), game-tree node
+    visited (minimax, alpha-beta, MCTS), fitness evaluation (GA, simulated
+    annealing), or candidate word evaluated (Wordle). This counter only
+    increments; the semantics are documented at each solver.
     """
 
     def __init__(self) -> None:
@@ -72,11 +72,11 @@ class InstanceTimeout(Exception):
 
 @contextmanager
 def _time_limit(seconds: float):
-    """Interrompt le bloc via SIGALRM si depasse `seconds`. Fonctionne dans le
-    thread principal de n'importe quel processus (y compris un worker separe
-    lance par ProcessPoolExecutor, qui a son propre thread principal).
-    N'interrompt pas un appel C bloquant qui ne rend jamais la main a
-    l'interpreteur (non pertinent ici : les solveurs lents sont en pur Python)."""
+    """Interrupt the block via SIGALRM if `seconds` is exceeded. Works in the
+    main thread of any process (including a separate worker launched by
+    ProcessPoolExecutor, which has its own main thread). Does not interrupt a
+    blocking C call that never returns control to the interpreter (not
+    relevant here: the slow solvers are pure Python)."""
 
     def _handler(signum, frame):
         raise InstanceTimeout()
@@ -93,16 +93,16 @@ def _time_limit(seconds: float):
 def _measure_instance(
     solver: Solver, instance_data: Any, timeout_seconds: float
 ) -> tuple[SolverOutput, float, float]:
-    """Execute un solveur sur une instance avec mesure temps/memoire et budget
-    de temps. Fonction top-level (picklable) pour pouvoir tourner dans un
-    worker de ProcessPoolExecutor.
+    """Run a solver on an instance with time/memory measurement and a time
+    budget. Top-level function (picklable) so it can run in a
+    ProcessPoolExecutor worker.
 
-    La memoire est mesuree via ru_maxrss (pic memoire du processus, en Ko)
-    plutot que tracemalloc : tracemalloc trace chaque allocation individuelle
-    et ralentit d'un facteur 4-10x les solveurs qui allouent beaucoup (GA,
-    recuit simule), ce qui faussait les mesures de temps. ru_maxrss est
-    quasi gratuit et, comme chaque worker ne traite qu'une instance, il
-    approxime bien le pic memoire de ce solve.
+    Memory is measured via ru_maxrss (process peak memory, in KB) rather than
+    tracemalloc: tracemalloc traces every individual allocation and slows
+    down allocation-heavy solvers (GA, simulated annealing) by a factor of
+    4-10x, which skewed the timing measurements. ru_maxrss is nearly free and,
+    since each worker handles only one instance, it closely approximates the
+    peak memory of that solve.
     """
     counter = NodeCounter()
     try:
@@ -149,12 +149,12 @@ def run_benchmark(
     instances: Iterable[tuple[str, str | int, Any]],
     timeout_seconds: float = 120.0,
 ) -> list[Metrics]:
-    """Execute un solveur sequentiellement sur une liste d'instances.
+    """Run a solver sequentially on a list of instances.
 
-    instances: iterable de (instance_id, difficulty, instance_data)
-    timeout_seconds: si une instance depasse ce budget, elle est comptee en
-        echec (timeout) et on passe a la suivante plutot que de bloquer tout
-        le benchmark.
+    instances: iterable of (instance_id, difficulty, instance_data)
+    timeout_seconds: if an instance exceeds this budget, it is counted as a
+        failure (timeout) and we move on to the next one rather than blocking
+        the whole benchmark.
     """
     results: list[Metrics] = []
     for instance_id, difficulty, instance_data in instances:
@@ -175,13 +175,13 @@ def run_benchmark_parallel(
     timeout_seconds: float = 120.0,
     max_workers: int | None = None,
 ) -> list[Metrics]:
-    """Comme run_benchmark, mais distribue les instances sur plusieurs processus
-    (les instances d'un meme solveur sont independantes). Le budget de temps
-    est applique dans chaque worker via SIGALRM : une instance qui depasse le
-    budget s'auto-interrompt et libere son worker pour la tache suivante.
+    """Like run_benchmark, but distributes instances across several processes
+    (instances of a given solver are independent). The time budget is applied
+    in each worker via SIGALRM: an instance that exceeds the budget
+    interrupts itself and frees its worker for the next task.
 
-    `solver` doit etre une fonction top-level (picklable) - pas de lambda ni
-    de closure retournee par une factory.
+    `solver` must be a top-level (picklable) function - no lambda or closure
+    returned by a factory.
     """
     max_workers = max_workers or max(1, (os.cpu_count() or 2) - 1)
     instances = list(instances)

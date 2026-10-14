@@ -1,4 +1,4 @@
-"""Plateau de Puissance 4 (Connect Four), 7 colonnes x 6 lignes."""
+"""Connect Four board, 7 columns x 6 rows."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ _CENTER_ORDER = sorted(range(N_COLS), key=lambda c: abs(c - N_COLS // 2))
 
 class Board:
     def __init__(self, cells: list[list[int]] | None = None, to_move: int = PLAYER_1):
-        # cells[col][row], row 0 = bas de la grille
+        # cells[col][row], row 0 = bottom of the grid
         self.cells = cells if cells is not None else [[EMPTY] * N_ROWS for _ in range(N_COLS)]
         self.to_move = to_move
 
@@ -25,12 +25,11 @@ class Board:
         return [c for c in range(N_COLS) if self.cells[c][N_ROWS - 1] == EMPTY]
 
     def ordered_moves(self) -> list[int]:
-        """Coups legaux tries par proximite au centre (meilleurs coups en
-        premier au Puissance 4). Utilise par minimax ET alpha-beta : meme
-        ordre de parcours pour les deux, pour que l'elagage alpha-beta ne
-        fasse QUE couper des noeuds sans jamais changer le coup choisi en cas
-        d'egalite de valeur (sinon les deux peuvent diverger sur des coups
-        equivalents et jouer des parties differentes)."""
+        """Legal moves sorted by proximity to the center (best moves first in
+        Connect Four). Used by both minimax AND alpha-beta: same traversal
+        order for both, so that alpha-beta pruning ONLY cuts nodes without ever
+        changing the chosen move on ties (otherwise the two could diverge on
+        equivalent moves and play different games)."""
         legal = set(self.legal_moves())
         return [c for c in _CENTER_ORDER if c in legal]
 
@@ -41,7 +40,7 @@ class Board:
         return N_ROWS
 
     def play(self, col: int) -> "Board":
-        """Retourne un nouveau plateau apres avoir joue dans col (immutable)."""
+        """Return a new board after playing in col (immutable)."""
         board = self.clone()
         row = board.height(col)
         board.cells[col][row] = self.to_move
@@ -49,7 +48,7 @@ class Board:
         return board
 
     def play_inplace(self, col: int) -> int:
-        """Joue dans col en place, retourne la ligne jouee (pour undo)."""
+        """Play in col in place, return the row played (for undo)."""
         row = self.height(col)
         self.cells[col][row] = self.to_move
         self.to_move = -self.to_move
@@ -63,7 +62,7 @@ class Board:
         return all(self.cells[c][N_ROWS - 1] != EMPTY for c in range(N_COLS))
 
     def winner(self) -> int | None:
-        """Retourne PLAYER_1/PLAYER_2 si victoire, None sinon."""
+        """Return PLAYER_1/PLAYER_2 if there is a win, None otherwise."""
         directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
         for c in range(N_COLS):
             for r in range(N_ROWS):

@@ -1,8 +1,8 @@
-"""Solveur CSP : chaque indice de feedback est traduit en contraintes sur les
-positions/lettres (via OR-Tools CP-SAT, coherent avec l'approche CP utilisee
-pour Sudoku), puis on demande au solveur un mot satisfaisant compatible avec
-la liste des candidats restants. Un 'noeud explore' = nombre de branches
-explorees par CP-SAT (souvent 0, la propagation de contraintes suffit)."""
+"""CSP solver: each feedback clue is translated into constraints on
+positions/letters (via OR-Tools CP-SAT, consistent with the CP approach used
+for Sudoku), then the solver is asked for a satisfying word compatible with
+the list of remaining candidates. An 'explored node' = number of branches
+explored by CP-SAT (often 0, constraint propagation is enough)."""
 
 from __future__ import annotations
 
@@ -20,9 +20,9 @@ ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 def _pick_word_matching_constraints(
     candidates: list[str], length: int, counter: NodeCounter
 ) -> str | None:
-    """Modelise 'quel mot de `candidates` choisir' comme un CSP: une variable
-    par position (indice dans l'alphabet), contrainte a correspondre a l'un
-    des mots restants (contrainte de table / allowed_assignments)."""
+    """Model 'which word of `candidates` to choose' as a CSP: one variable
+    per position (index in the alphabet), constrained to match one of the
+    remaining words (table constraint / allowed_assignments)."""
     if not candidates:
         return None
 
@@ -40,17 +40,15 @@ def _pick_word_matching_constraints(
     return "".join(ALPHABET[solver.value(v)] for v in position_vars)
 
 
-def solve_csp(
-    instance: tuple[str, list[str]], counter: NodeCounter, seed: int = 0
-) -> SolverOutput:
+def solve_csp(instance: tuple[str, list[str]], counter: NodeCounter, seed: int = 0) -> SolverOutput:
     target, all_words = instance
     length = len(target)
     rng = random.Random(seed)
     candidates = list(all_words)
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        # limite la taille de la table de contraintes pour rester rapide sur
-        # de gros pools de candidats (echantillon aleatoire representatif)
+        # limit the constraint table size to stay fast on large candidate
+        # pools (representative random sample)
         pool = candidates if len(candidates) <= 500 else rng.sample(candidates, 500)
         guess = _pick_word_matching_constraints(pool, length, counter)
         if guess is None:

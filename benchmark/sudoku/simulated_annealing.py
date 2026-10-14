@@ -1,7 +1,7 @@
-"""Recuit simule (Simulated Annealing) : meme representation que le GA (blocs
-remplis, conflits lignes/colonnes comme cout), mais un seul etat qui evolue
-par swaps acceptes selon un critere de Metropolis. Un 'noeud explore' = une
-evaluation de la fonction de cout (un swap teste).
+"""Simulated Annealing: same representation as the GA (filled blocks,
+row/column conflicts as cost), but a single evolving state that moves by
+swaps accepted under a Metropolis criterion. An 'explored node' = one
+evaluation of the cost function (one swap tested).
 """
 
 from __future__ import annotations
@@ -35,12 +35,7 @@ def solve_simulated_annealing(
 
     boxes = [(br, bc) for br in range(0, 9, 3) for bc in range(0, 9, 3)]
     free_by_box = {
-        (br, bc): [
-            (r, c)
-            for r in range(br, br + 3)
-            for c in range(bc, bc + 3)
-            if not fixed[r][c]
-        ]
+        (br, bc): [(r, c) for r in range(br, br + 3) for c in range(bc, bc + 3) if not fixed[r][c]]
         for br, bc in boxes
     }
     movable_boxes = [b for b in boxes if len(free_by_box[b]) >= 2]

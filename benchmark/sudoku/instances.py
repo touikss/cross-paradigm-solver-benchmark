@@ -23,7 +23,7 @@ def load_puzzles(difficulty: str) -> list[str]:
 def sample_instances(
     n_per_difficulty: int = 10, seed: int = 42
 ) -> list[tuple[str, str, SudokuGrid]]:
-    """Retourne (instance_id, difficulty, grille) pour un echantillon par difficulte."""
+    """Return (instance_id, difficulty, grid) for one sample per difficulty."""
     rng = random.Random(seed)
     instances: list[tuple[str, str, SudokuGrid]] = []
     for difficulty in DIFFICULTY_FILES:
