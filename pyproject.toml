@@ -1,18 +1,11 @@
 [project]
-name = "benchmark-solveurs-jeux"
+name = "solver-benchmark"
 version = "0.1.0"
-description = "Benchmark cross-paradigme de solveurs de jeux (Sudoku, Connect Four, Wordle)"
+description = "Cross-paradigm benchmark of game solvers (Sudoku, Connect Four, Wordle)"
 requires-python = ">=3.13"
 dependencies = [
-    "ipykernel",
-    "matplotlib",
-    "numpy",
     "ortools",
     "pandas",
-    "pygad",
-    "pytest",
-    "scipy",
-    "seaborn",
     "z3-solver",
 ]
 
@@ -25,10 +18,21 @@ packages = ["benchmark"]
 
 [dependency-groups]
 dev = [
-    "jupyter-client>=8.9.1",
-    "nbconvert>=7.17.1",
+    "pytest",
     "ruff>=0.17.0",
 ]
+notebook = [
+    "ipykernel",
+    "jupyterlab",
+    "jupyter-client>=8.9.1",
+    "matplotlib",
+    "nbconvert>=7.17.1",
+    "numpy",
+    "seaborn",
+]
+
+[tool.uv]
+default-groups = ["dev", "notebook"]
 
 [tool.ruff]
 line-length = 100
