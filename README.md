@@ -24,7 +24,7 @@ The goal is not to crown a "best" solver but to show which paradigm fits which c
 
 ## Key results
 
-All numbers below come from the committed [`results/*.csv`](results/) (analysis and discussion in [`notebook.ipynb`](notebook.ipynb), written in French).
+All numbers below come from the committed [`results/*.csv`](results/) (analysis and discussion in [`notebook.ipynb`](notebook.ipynb)).
 
 **Sudoku** (30 grids: 10 each from Easy51, top95, hardest11; 210 runs)
 
@@ -83,7 +83,9 @@ These results are measurements, not proofs. What limits them:
 - **Small samples.** 30 Sudoku grids (10 per difficulty), 40 Wordle targets, one game per Connect Four depth. With 30 grids, a 30/30 score is compatible with a true success rate as low as 89% (Wilson 95% interval: 88.6-100%); 22/30 is compatible with 56-86%, and 6/30 with 10-37%. Rankings between solvers that are far apart are solid; small differences are not.
 - **One run per instance.** Stochastic solvers (genetic, annealing, MCTS) use a single fixed seed (0); their failure rates are not averaged over seeds.
 - **A single Connect Four opponent.** "Win" means beating a depth-4 alpha-beta with one heuristic, as first player only, from the empty board; the game is deterministic, so one game per depth is one trajectory.
-- **Timing under contention.** Instances run in parallel (CPU count - 1 workers), so wall-clock times are relative, not absolute; memory is the worker's peak RSS. Node counts are comparable within a solver family, not across families.
+- **Timing under contention.** Instances run in parallel (CPU count - 1 workers), so wall-clock times are relative, not absolute. Node counts are comparable within a solver family, not across families.
+- **Memory is not a per-solve measurement.** `peak_memory_mb` is `ru_maxrss` of a pooled worker process, i.e. a running maximum that includes the interpreter and the imported libraries. It only separates solvers with heavy native libraries (CP-SAT, Z3 at ~70-95 MB versus ~47-58 MB for the others); it says nothing about the algorithmic memory cost.
+- **The timeout is not enforced for native solvers.** `SIGALRM` is handled between Python bytecodes, so a long CP-SAT or Z3 call is not interrupted until it returns, and those solvers have no internal time limit. In the committed results none of them came close to 120 s.
 - **One machine, one word list.** Wordle targets come from a single list (`web2`); no repeated runs on other hardware.
 - **Unix only.** The timeout relies on `SIGALRM`.
 
@@ -93,16 +95,17 @@ Not done: repeated runs with several seeds and confidence intervals on timings, 
 
 - **Common metrics** ([`benchmark/core.py`](benchmark/core.py)): every run produces one `Metrics` row (game, paradigm, instance, difficulty, success, wall time, peak memory, nodes explored, solution quality). A "node" is defined per family (assignment tried, game-tree node, fitness evaluation, candidate word), so node counts are comparable within a family, not across families.
 - **Frozen instances**: Sudoku grids and Wordle words are sampled with a fixed seed (42) from files committed in [`data/`](data/); Connect Four instances are generated in code (empty board + depth parameter); stochastic solvers use a fixed seed (0).
-- **Per-instance timeout**: each instance is limited to 120 s (SIGALRM); on timeout it is recorded as a failure and the benchmark moves on. No instance hit the timeout in the committed results (the slowest run took ~72 s).
+- **Per-instance timeout**: each instance is limited to 120 s (SIGALRM); on timeout it is recorded as a failure and the benchmark moves on. This does not apply to native CP-SAT/Z3 calls (see [Threats to validity](#threats-to-validity)). No instance hit the timeout in the committed results (the slowest run took ~72 s).
 - **Parallel execution**: instances of a solver are independent and run in a `ProcessPoolExecutor` (CPU count - 1 workers). Consequently wall-clock times are measured under some CPU contention and should be read as relative, not absolute.
 - **Checkpointing**: the results CSV of each game is rewritten after every solver finishes ([`benchmark/run_all.py`](benchmark/run_all.py)), so an interrupted run loses at most one solver.
-- **Memory**: `ru_maxrss` of the worker process (cheap, no tracing overhead).
+- **Memory**: `ru_maxrss` of the worker process (cheap, no tracing overhead). Workers are reused, so this is a running maximum, not a per-instance peak (see [Threats to validity](#threats-to-validity)).
+- **Results schema** (`results/<game>_results.csv`): `game, paradigm, instance_id, difficulty, success, time_seconds, peak_memory_mb, nodes_explored, solution_quality`, plus game-specific `extra_*` columns (`extra_budget_exceeded` for Sudoku, `extra_winner` for Connect Four, `extra_timed_out` if a run is interrupted). Rows are written in instance order, so repeated runs give the same row order.
 - Unix only (uses `resource` and `SIGALRM`). Python >= 3.13.
 
 ## Quick start
 
 ```bash
-uv sync
+uv sync                            # installs runtime, dev and notebook dependencies
 uv run pytest                      # unit tests
 uv run ruff check .                # lint
 uv run python -m benchmark.run_all # regenerate results/*.csv (several minutes)
@@ -118,8 +121,9 @@ benchmark/            solver implementations + shared framework
   run_all.py          runs every benchmark, writes results/*.csv
 data/                 frozen instances (Sudoku grids, Wordle word lists)
 results/              precomputed CSVs and figures
-tests/                pytest suite
-notebook.ipynb        theory, analysis, paradigm-selection guide (in French)
+scripts/              one-off diagnostics (alpha-beta depth-9 check)
+tests/                pytest suite (framework, solvers, games)
+notebook.ipynb        theory, analysis, paradigm-selection guide
 ```
 
 ## Data and licences
