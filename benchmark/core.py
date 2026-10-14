@@ -74,9 +74,12 @@ class InstanceTimeout(Exception):
 def _time_limit(seconds: float):
     """Interrupt the block via SIGALRM if `seconds` is exceeded. Works in the
     main thread of any process (including a separate worker launched by
-    ProcessPoolExecutor, which has its own main thread). Does not interrupt a
-    blocking C call that never returns control to the interpreter (not
-    relevant here: the slow solvers are pure Python)."""
+    ProcessPoolExecutor, which has its own main thread).
+
+    Limitation: SIGALRM is only handled between Python bytecodes, so a native
+    call that does not return control to the interpreter (the CP-SAT and Z3
+    solvers) is not interrupted until it returns. The limit is therefore not
+    enforced for those solvers; in the committed results none came close to it."""
 
     def _handler(signum, frame):
         raise InstanceTimeout()
@@ -100,9 +103,14 @@ def _measure_instance(
     Memory is measured via ru_maxrss (process peak memory, in KB) rather than
     tracemalloc: tracemalloc traces every individual allocation and slows
     down allocation-heavy solvers (GA, simulated annealing) by a factor of
-    4-10x, which skewed the timing measurements. ru_maxrss is nearly free and,
-    since each worker handles only one instance, it closely approximates the
-    peak memory of that solve.
+    4-10x, which skewed the timing measurements.
+
+    Caveat: ru_maxrss is the peak since the *process* started, and a
+    ProcessPoolExecutor worker is reused across instances. The value is
+    therefore a running maximum that includes the interpreter and imported
+    libraries, not the peak memory of this single solve. It only separates
+    solvers whose native libraries are heavy (CP-SAT, Z3); do not read it as
+    the algorithmic memory cost.
     """
     counter = NodeCounter()
     try:
@@ -185,25 +193,28 @@ def run_benchmark_parallel(
     """
     max_workers = max_workers or max(1, (os.cpu_count() or 2) - 1)
     instances = list(instances)
-    results: list[Metrics] = []
+    results: list[Metrics | None] = [None] * len(instances)
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         future_to_meta = {
             executor.submit(_measure_instance, solver, instance_data, timeout_seconds): (
+                index,
                 instance_id,
                 difficulty,
             )
-            for instance_id, difficulty, instance_data in instances
+            for index, (instance_id, difficulty, instance_data) in enumerate(instances)
         }
         for future in as_completed(future_to_meta):
-            instance_id, difficulty = future_to_meta[future]
+            index, instance_id, difficulty = future_to_meta[future]
             output, elapsed, peak_mem = future.result()
             if output.extra.get("timed_out"):
                 print(f"    [timeout] {game}/{paradigm}/{instance_id} > {timeout_seconds}s, skip")
-            results.append(
-                _to_metrics(game, paradigm, instance_id, difficulty, output, elapsed, peak_mem)
+            # Stored by input position, so the output order does not depend on
+            # which worker finishes first (deterministic CSV row order).
+            results[index] = _to_metrics(
+                game, paradigm, instance_id, difficulty, output, elapsed, peak_mem
             )
-    return results
+    return results  # type: ignore[return-value]
 
 
 def metrics_to_dataframe(metrics: Iterable[Metrics]) -> pd.DataFrame:

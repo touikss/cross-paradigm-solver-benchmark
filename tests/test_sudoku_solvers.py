@@ -33,3 +33,14 @@ def test_sample_instances_are_valid_and_cover_all_difficulties():
     assert difficulties == {"easy", "medium_hard", "diabolical"}
     for _, _, grid in instances:
         assert grid.count_empty() > 0
+
+
+@pytest.mark.parametrize("solver", [solve_dancing_links, solve_cp_sat, solve_smt])
+def test_fast_exact_solvers_solve_a_hardest_grid(solver):
+    diabolical = [
+        grid
+        for _, difficulty, grid in sample_instances(n_per_difficulty=1)
+        if difficulty == "diabolical"
+    ]
+    output = solver(diabolical[0], NodeCounter())
+    assert output.success
