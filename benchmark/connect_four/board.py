@@ -14,7 +14,6 @@ _CENTER_ORDER = sorted(range(N_COLS), key=lambda c: abs(c - N_COLS // 2))
 
 class Board:
     def __init__(self, cells: list[list[int]] | None = None, to_move: int = PLAYER_1):
-        # cells[col][row], row 0 = bottom of the grid
         self.cells = cells if cells is not None else [[EMPTY] * N_ROWS for _ in range(N_COLS)]
         self.to_move = to_move
 

@@ -12,15 +12,9 @@ from __future__ import annotations
 from .board import Board
 
 DEPTHS = list(range(1, 11))
-# Minimax has no pruning: at depth >= 7 a full game becomes impractical in
-# reasonable time (combinatorial explosion, precisely what the benchmark is
-# meant to illustrate against alpha-beta).
 MINIMAX_DEPTHS = list(range(1, 7))
-# Even with pruning + center-first move ordering, depth 10 pushes a full game
-# to several minutes (~x7 per extra depth level); the exponential trend is
-# already very clear at 9.
 ALPHA_BETA_DEPTHS = list(range(1, 10))
-MCTS_SIMULATIONS_PER_DEPTH = 50  # scale factor: simulations ~ depth
+MCTS_SIMULATIONS_PER_DEPTH = 50
 
 
 def depth_instances(

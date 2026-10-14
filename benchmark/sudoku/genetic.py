@@ -118,7 +118,6 @@ def solve_genetic(grid: SudokuGrid, counter: NodeCounter, seed: int = 0) -> Solv
             break
 
         if stagnant >= STAGNATION_LIMIT:
-            # partial restart: keep the elite, regenerate the rest at random
             elite = scored[: POP_SIZE // 20]
             population = [row[:] for row in elite] + [
                 _random_individual(grid, fixed, rng) for _ in range(POP_SIZE - len(elite))

@@ -209,8 +209,6 @@ def run_benchmark_parallel(
             output, elapsed, peak_mem = future.result()
             if output.extra.get("timed_out"):
                 print(f"    [timeout] {game}/{paradigm}/{instance_id} > {timeout_seconds}s, skip")
-            # Stored by input position, so the output order does not depend on
-            # which worker finishes first (deterministic CSV row order).
             results[index] = _to_metrics(
                 game, paradigm, instance_id, difficulty, output, elapsed, peak_mem
             )

@@ -13,8 +13,6 @@ from ..core import NodeCounter, SolverOutput
 from .game import get_feedback, is_win
 from .instances import MAX_ATTEMPTS
 
-# The optimal first guess depends only on the word list (not on the target):
-# cache it to avoid repeating the most expensive computation for every instance.
 _first_guess_cache: dict[tuple[str, ...], str] = {}
 
 

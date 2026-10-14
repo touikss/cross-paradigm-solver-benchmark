@@ -14,7 +14,6 @@ def test_feedback_all_green_on_exact_match():
 
 
 def test_feedback_handles_duplicate_letters():
-    # target 'allow' has two 'l'; guess 'lulls' also has two 'l'
     feedback = get_feedback("lulls", "allow")
     assert feedback[0] in ("Y", "G")
     assert not is_win(feedback)

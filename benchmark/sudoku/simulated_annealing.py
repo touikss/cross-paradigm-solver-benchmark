@@ -67,7 +67,7 @@ def solve_simulated_annealing(
         temperature = max(temperature * COOLING_RATE, MIN_TEMPERATURE)
 
         if stagnant >= STAGNATION_LIMIT:
-            temperature = INITIAL_TEMPERATURE  # reheating
+            temperature = INITIAL_TEMPERATURE
             stagnant = 0
 
     result = SudokuGrid(best_cells)

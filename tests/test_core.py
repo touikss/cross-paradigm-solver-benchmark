@@ -36,10 +36,10 @@ def test_measure_instance_returns_output_and_timing():
 def test_timeout_is_recorded_as_a_failure():
     start = time.perf_counter()
     output, elapsed, _ = _measure_instance(_sleeping_solver, None, timeout_seconds=0.2)
-    assert time.perf_counter() - start < 2  # interrupted, did not wait 5 s
+    assert time.perf_counter() - start < 2
     assert output.success is False
     assert output.extra == {"timed_out": True}
-    assert output.nodes_explored == 1  # nodes counted before the interruption
+    assert output.nodes_explored == 1
     assert elapsed == 0.2
 
 

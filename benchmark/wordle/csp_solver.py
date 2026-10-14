@@ -47,8 +47,6 @@ def solve_csp(instance: tuple[str, list[str]], counter: NodeCounter, seed: int =
     candidates = list(all_words)
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        # limit the constraint table size to stay fast on large candidate
-        # pools (representative random sample)
         pool = candidates if len(candidates) <= 500 else rng.sample(candidates, 500)
         guess = _pick_word_matching_constraints(pool, length, counter)
         if guess is None:

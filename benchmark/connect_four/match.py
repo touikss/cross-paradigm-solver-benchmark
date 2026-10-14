@@ -15,7 +15,7 @@ REFERENCE_DEPTH = 4
 
 
 def _reference_choose_move(board: Board, _counter: NodeCounter) -> int:
-    from . import alpha_beta  # late import: avoids a cycle with alpha_beta.py
+    from . import alpha_beta
 
     return alpha_beta.choose_move(board, REFERENCE_DEPTH, NodeCounter())
 
