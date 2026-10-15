@@ -135,3 +135,4 @@ notebook.ipynb        theory, analysis, paradigm-selection guide
 ## Context
 
 Built as a solo project for the *Intelligence Symbolique* course at EPITA (SCIA), subject L4, "cross-paradigm benchmark of game solvers".
+Developed in July 2026; code, tests and documentation were cleaned up, translated to English and extended in October 2026.
